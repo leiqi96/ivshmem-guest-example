@@ -80,10 +80,10 @@ int main(int argc, char ** argv)
 
         FD_ZERO(&readset);
         /* conn socket is in Live_vms at posn 0 */
-        FD_SET(s->conn_socket, &readset);
-        for (i = 0; i < s->total_count; i++) {
+        FD_SET(s->conn_socket, &readset); 
+        for (i = 0; i < s->total_count; i++) {    
             if (s->live_vms[i].alive != 0) {
-                FD_SET(s->live_vms[i].sockfd, &readset);
+                FD_SET(s->live_vms[i].sockfd, &readset);     //添加客户端套接字
             }
         }
 
@@ -205,7 +205,8 @@ void add_new_guest(server_state_t * s) {
 
     sendPosition(vm_sock, new_posn);
     sendUpdate(vm_sock, neg1, sizeof(long), s->shm_fd);
-    printf("[NC] trying to send fds to new connection\n");
+
+	printf("[NC] trying to send fds to new connection\n");
     sendRights(vm_sock, new_posn, sizeof(new_posn), s->live_vms, s->msi_vectors);
 
     printf("[NC] Connected (count = %ld).\n", new_posn);

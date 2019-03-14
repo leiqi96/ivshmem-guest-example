@@ -316,23 +316,23 @@ static int kvm_ivshmem_probe_device (struct pci_dev *pdev,
 
 	printk("KVM_IVSHMEM: Probing for KVM_IVSHMEM Device\n");
 
-	result = pci_enable_device(pdev);
+	result = pci_enable_device(pdev); //初始化设备，唤醒设备
 	if (result) {
 		printk(KERN_ERR "Cannot probe KVM_IVSHMEM device %s: error %d\n",
 		pci_name(pdev), result);
 		return result;
 	}
 
-	result = pci_request_regions(pdev, "kvm_ivshmem");
+	result = pci_request_regions(pdev, "kvm_ivshmem"); //通知内核该设备对应的IO端口和内存资源已经使用，其他的PCI设备不要再使用这个区域
 	if (result < 0) {
 		printk(KERN_ERR "KVM_IVSHMEM: cannot request regions\n");
 		goto pci_disable;
 	} else printk(KERN_ERR "KVM_IVSHMEM: result is %d\n", result);
 
-	kvm_ivshmem_dev.ioaddr = pci_resource_start(pdev, 2);
+	kvm_ivshmem_dev.ioaddr = pci_resource_start(pdev, 2); //// bar2的映射内存的启始地址
 	kvm_ivshmem_dev.ioaddr_size = pci_resource_len(pdev, 2);
 
-	kvm_ivshmem_dev.base_addr = pci_iomap(pdev, 2, 0);
+	kvm_ivshmem_dev.base_addr = pci_iomap(pdev, 2, 0); //将bar2映射到线性地址空间
 	printk(KERN_INFO "KVM_IVSHMEM: iomap base = 0x%lu \n",
 							(unsigned long) kvm_ivshmem_dev.base_addr);
 
@@ -345,9 +345,9 @@ static int kvm_ivshmem_probe_device (struct pci_dev *pdev,
 	printk(KERN_INFO "KVM_IVSHMEM: ioaddr = %x ioaddr_size = %d\n",
 						kvm_ivshmem_dev.ioaddr, kvm_ivshmem_dev.ioaddr_size);
 
-	kvm_ivshmem_dev.regaddr =  pci_resource_start(pdev, 0);
+	kvm_ivshmem_dev.regaddr =  pci_resource_start(pdev, 0); ;// bar0的映射内存的启始地址
 	kvm_ivshmem_dev.reg_size = pci_resource_len(pdev, 0);
-	kvm_ivshmem_dev.regs = pci_iomap(pdev, 0, 0x100);
+	kvm_ivshmem_dev.regs = pci_iomap(pdev, 0, 0x100); //将bar0映射到线性地址空间
 
 	kvm_ivshmem_dev.dev = pdev;
 
@@ -358,7 +358,7 @@ static int kvm_ivshmem_probe_device (struct pci_dev *pdev,
 	}
 
 	/* set all masks to on */
-	writel(0xffffffff, kvm_ivshmem_dev.regs + IntrMask);
+	writel(0xffffffff, kvm_ivshmem_dev.regs + IntrMask);    /*设置IntrMask使能*/
 
 	/* by default initialize semaphore to 0 */
 	sema_init(&sema, 0);
@@ -415,7 +415,7 @@ static int __init kvm_ivshmem_init_module (void)
 	int err = -ENOMEM;
 
 	/* Register device node ops. */
-	err = register_chrdev(0, "kvm_ivshmem", &kvm_ivshmem_ops);
+	err = register_chrdev(0, "kvm_ivshmem", &kvm_ivshmem_ops);   //device "kvm_ivshmem" 用来用户态对ivshmem pci的操作接口
 	if (err < 0) {
 		printk(KERN_ERR "Unable to register kvm_ivshmem device\n");
 		return err;

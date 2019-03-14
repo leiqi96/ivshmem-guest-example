@@ -191,7 +191,7 @@ int sendRights(int fd, long const count, size_t count_len, vmguest_t * Live_vms,
                                                             long msi_vectors)
 {
     /* updates about new guests are sent one at a time */
-
+	//将其他vm的eventfd和自己的evetfd发给自己
     long i, j;
 
     for (i = 0; i <= count; i++) {
