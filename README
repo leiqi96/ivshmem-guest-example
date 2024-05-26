@@ -39,3 +39,9 @@ uio - test programs for the UIO driver that uses the assigned mappings of
 registers and memory to trigger notifications rather than ioctl calls as in the
 other 'tests' directory.
 
+
+The Roadmap
+----------
+1. Support for more and higher versions of the kernel
+2. Support for qemu msi-x without kvm
+3. Provide an example of user space
